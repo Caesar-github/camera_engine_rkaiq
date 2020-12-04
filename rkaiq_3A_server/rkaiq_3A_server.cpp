@@ -209,7 +209,7 @@ static void init_engine(void)
 
 	aiq_ctx = rk_aiq_uapi_sysctl_init(media_info.cams[index].sensor_entity_name, NULL, NULL, NULL);
 
-    if (rk_aiq_uapi_sysctl_prepare(aiq_ctx, width, height, RK_AIQ_WORKING_MODE_ISP_HDR2)) {
+    if (rk_aiq_uapi_sysctl_prepare(aiq_ctx, width, height, RK_AIQ_WORKING_MODE_NORMAL)) {
         ERR("rkaiq engine prepare failed !\n");
         exit(-1);
     }

@@ -19,8 +19,8 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMakeTargets")
 
 #set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
 
-#set BUILDROOT_BUILD_PROJECT
-set(BUILDROOT_BUILD_PROJECT true)
+#set BUILROOT_BUILD_PROJECT
+set(BUILROOT_BUILD_PROJECT true)
 #set(ENABLE_ASAN true)
 
 #set RK_SIMULATOR_HW
@@ -35,10 +35,16 @@ endif()
 # ----------------------------------------------------------------------------
 if(RK_SIMULATOR_HW)
 	add_compile_options(-DRK_SIMULATOR_HW)
-elseif(BUILDROOT_BUILD_PROJECT)
+elseif(BUILROOT_BUILD_PROJECT)
 	#add_compile_options(-DDISABLE_PP)
 	#add_compile_options(-DDISABLE_PP_STATS)
-    # buildroot will set the compiler
+	if(ARCH STREQUAL "aarch64")
+		SET(CMAKE_C_COMPILER "/home/camera/camera/rv1109_sdk/prebuilts/gcc/linux-x86/aarch64/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-gcc")
+		SET(CMAKE_CXX_COMPILER "/home/camera/camera/rv1109_sdk/prebuilts/gcc/linux-x86/aarch64/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-g++")
+	else()
+		SET(CMAKE_C_COMPILER "/home/camera/camera/rv1109_sdk/buildroot/output/rockchip_puma/host/bin/arm-linux-gnueabihf-gcc")
+		SET(CMAKE_CXX_COMPILER "/home/camera/camera/rv1109_sdk/buildroot/output/rockchip_puma/host/bin/arm-linux-gnueabihf-g++")
+	endif()
 else()
     SET(CMAKE_C_COMPILER "/home/hkj/isp2-fpga/fpga-ramdisk/toolchains/host/bin/arm-buildroot-linux-gnueabi-gcc")
     SET(CMAKE_CXX_COMPILER "/home/hkj/isp2-fpga/fpga-ramdisk/toolchains/host/bin/arm-buildroot-linux-gnueabi-g++")
@@ -276,6 +282,7 @@ add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 # add algos implement
 # ----------------------------------------------------------------------------
 add_subdirectory(algos)
+add_subdirectory(rkaiq_3A_server)
 
 # surpress link_directories warning
 cmake_policy(SET CMP0015 NEW)
@@ -302,11 +309,3 @@ set (VERSIONFILEPATH ${PROJECT_SOURCE_DIR}/)
 execute_process(COMMAND sh
 	${PROJECT_SOURCE_DIR}/tools/check-version-with-tuningtools.sh
 	${VERSIONFILEPATH})
-
-
-add_subdirectory(rkaiq_3A_server)
-
-install(TARGETS rkaiq
-	RUNTIME DESTINATION /usr/bin
-	LIBRARY DESTINATION /usr/lib
-)

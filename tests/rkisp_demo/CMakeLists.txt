@@ -11,15 +11,21 @@ cmake_minimum_required(VERSION 2.8)
 #project name
 PROJECT(rkisp_demo)
 
-#set BUILDROOT_BUILD_PROJECT
-#set(BUILDROOT_BUILD_PROJECT true)
+#set BUILROOT_BUILD_PROJECT
+set(BUILROOT_BUILD_PROJECT true)
 #set(ENABLE_ASAN true)
 
 # ----------------------------------------------------------------------------
 # SET THE COMPILER PATH
 # ----------------------------------------------------------------------------
-if(BUILDROOT_BUILD_PROJECT)
-    # buildroot will set the compiler
+if(BUILROOT_BUILD_PROJECT)
+	if(ARCH STREQUAL "aarch64")
+		SET(CMAKE_C_COMPILER "/home/camera/camera/rv1109_sdk/prebuilts/gcc/linux-x86/aarch64/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-gcc")
+		SET(CMAKE_CXX_COMPILER "/home/camera/camera/rv1109_sdk/prebuilts/gcc/linux-x86/aarch64/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-g++")
+	else()
+		SET(CMAKE_C_COMPILER "/home/camera/camera/rv1109_sdk/buildroot/output/rockchip_puma/host/bin/arm-linux-gnueabihf-gcc")
+		SET(CMAKE_CXX_COMPILER "/home/camera/camera/rv1109_sdk/buildroot/output/rockchip_puma/host/bin/arm-linux-gnueabihf-g++")
+	endif()
 else()
     SET(CMAKE_C_COMPILER "/home/hkj/isp2-fpga/fpga-ramdisk/toolchains/host/bin/arm-buildroot-linux-gnueabi-gcc")
     SET(CMAKE_CXX_COMPILER "/home/hkj/isp2-fpga/fpga-ramdisk/toolchains/host/bin/arm-buildroot-linux-gnueabi-g++")

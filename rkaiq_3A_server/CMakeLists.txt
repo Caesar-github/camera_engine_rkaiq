@@ -11,15 +11,16 @@ cmake_minimum_required(VERSION 2.8)
 #project name
 PROJECT(rkaiq_3A_server)
 
-#set BUILDROOT_BUILD_PROJECT
-#set(BUILDROOT_BUILD_PROJECT true)
+#set BUILROOT_BUILD_PROJECT
+#set(BUILROOT_BUILD_PROJECT true)
 #set(ENABLE_ASAN true)
 
 # ----------------------------------------------------------------------------
 # SET THE COMPILER PATH
 # ----------------------------------------------------------------------------
-if(BUILDROOT_BUILD_PROJECT)
-    # buildroot will set the compiler
+if(BUILROOT_BUILD_PROJECT)
+    SET(CMAKE_C_COMPILER "/home/camera/camera/rv1109_sdk/prebuilts/gcc/linux-x86/arm/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf/bin/arm- linux-gnueabihf-gcc") 
+	SET(CMAKE_CXX_COMPILER "/home/camera/camera/rv1109_sdk/prebuilts/gcc/linux-x86/arm/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++")
 else()
     SET(CMAKE_C_COMPILER "/home/camera/camera/rv1109_sdk/prebuilts/gcc/linux-x86/arm/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc") 
     SET(CMAKE_CXX_COMPILER "/home/camera/camera/rv1109_sdk/prebuilts/gcc/linux-x86/arm/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++")
@@ -56,7 +57,7 @@ add_compile_options(-std=c++11)
 add_compile_options(-DADD_RK_AIQ)
 add_compile_options(-O0)
 # add_compile_options(-v)
-SET(RK_AIQ_LIB_DIR ${RK_AIQ_SOURCE_DIR}/all_lib/${CMAKE_BUILD_TYPE})
+SET(RK_AIQ_LIB_DIR ${RK_AIQ_SOURCE_DIR}/build/linux/all_lib/${CMAKE_BUILD_TYPE})
 message("rkaiq lib path" ${RK_AIQ_LIB_DIR})
 SET(RK_AIQ_INCLUDE_DIR
 ${RK_AIQ_SOURCE_DIR}/include/xcore/
@@ -71,30 +72,31 @@ ${RK_AIQ_SOURCE_DIR}/
 SET(RK_AIQ_LIB rkaiq)
 endif()
 
+#head file path
 include_directories(
 ${RK_AIQ_INCLUDE_DIR}
 )
 
-if(GENMESH_ONLINE)
-	if(ARCH STREQUAL "aarch64")
-		set (GENMESH_LIBS_DIR
-			${PROJECT_SOURCE_DIR}/../common/gen_mesh/linux/genMesh_static_64bit/
-			)
-	else()
-		set (GENMESH_LIBS_DIR
-			${PROJECT_SOURCE_DIR}/../common/gen_mesh/linux/genMesh_static_32bit/
-			)
-	endif()
+# set output binary path
+if(WIN32)
+    SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/exe)
+    SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/all_lib/)
+    SET(CMAKE_LIBRARY_PATH ${LIBRARY_OUTPUT_PATH}/${CMAKE_BUILD_TYPE})
+else()
+    SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/exe/${CMAKE_BUILD_TYPE})
+    SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/all_lib/${CMAKE_BUILD_TYPE})
+    SET(CMAKE_LIBRARY_PATH ${LIBRARY_OUTPUT_PATH})
 endif()
+
+#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
+#set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
+message(${CMAKE_LIBRARY_PATH})
+message(${LIBRARY_OUTPUT_PATH})
 
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
-link_directories("${RK_AIQ_LIB_DIR}" "${GENMESH_LIBS_DIR}")
+#
+link_directories("${LIBRARY_OUTPUT_PATH}" "${RK_AIQ_LIB_DIR}" "${RK_DRM_LIB_DIR}")
+#add executable file
 ADD_EXECUTABLE(rkaiq_3A_server rkaiq_3A_server.cpp)
-
 target_link_libraries(rkaiq_3A_server ${RK_AIQ_LIB} pthread)
-
-install(TARGETS rkaiq_3A_server
-	RUNTIME DESTINATION /usr/bin
-	LIBRARY DESTINATION /usr/lib
-)

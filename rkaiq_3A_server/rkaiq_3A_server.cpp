@@ -229,7 +229,7 @@ static void start_engine(void)
 
 static void stop_engine(void)
 {
-    rk_aiq_uapi_sysctl_stop(aiq_ctx);
+    rk_aiq_uapi_sysctl_stop(aiq_ctx, false);
 }
 
 static void deinit_engine(void)
